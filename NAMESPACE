@@ -2,12 +2,8 @@
 
 S3method(summary,depFit)
 S3method(summary,indepFit)
-export(LikCopInd)
-export(PseudoL)
 export(SolveL)
 export(SolveLI)
-export(boot.fun)
-export(boot.funI)
 export(fitDepCens)
 export(fitIndepCens)
 import(foreach)

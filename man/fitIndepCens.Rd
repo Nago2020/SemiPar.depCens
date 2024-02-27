@@ -48,3 +48,42 @@ errors for finite-dimensional parameters, the nonparametric cumulative hazard fu
 This function allows to estimate all model parameters under the assumption of independent censoring. First, estimates the cumulative hazard function, and
 then at the second stage it estimates other model parameters assuming that the cumulative hazard is known.
 }
+\examples{
+\dontrun{
+
+# Toy data example to illustrate implementation
+n = 300
+beta = c(0.5)
+lambd = 0.35
+eta = c(0.9,0.4)
+X = cbind(rbinom(n,1,0.5))
+W = cbind(rep(1,n),rbinom(n,1,0.5))
+# generate dependency structure from Frank
+frank.cop <- copula::frankCopula(param = 5,dim = 2)
+U = copula::rCopula(n,frank.cop)
+T1 = (-log(1-U[,1]))/(lambd*exp(X*beta))                  # Survival time'
+T2 = (-log(1-U[,2]))^(1.1)*exp(W\%*\%eta)                   # Censoring time
+A = runif(n,0,15)                                         # administrative censoring time
+Z = pmin(T1,T2,A)
+d1 = as.numeric(Z==T1)
+d2 = as.numeric(Z==T2)
+resData = data.frame("Z" = Z,"d1" = d1, "d2" = d2)     # should be data frame
+
+# Fit independent censoring model
+
+fitI <- fitIndepCens(resData = resData, X = X, W = W, bootstrap = FALSE)
+
+# parameter estimates
+
+fitI$parameterEstimates
+
+# summary fit results
+summary(fitI)
+
+# plot cumulative hazard vs time
+
+ plot(fitI$observedTime, fitI$cumhazardFunction, type = "l",xlab = "Time",
+ ylab = "Estimated cumulative hazard function")
+}
+
+}

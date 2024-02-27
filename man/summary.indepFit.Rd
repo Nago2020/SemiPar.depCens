@@ -11,6 +11,9 @@
 
 \item{...}{Further arguments}
 }
+\value{
+Summary of independent censoring model fit in the form of table
+}
 \description{
 Summary of \code{indepCensoringFit} object
 }

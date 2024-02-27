@@ -15,7 +15,7 @@ knitr::opts_chunk$set(warning = FALSE,
 # SemiPar.depCens
 
 
-The goal of *SemiPar.depCens* package is to provide easy to use functions in *R* for estimation of the dependent censoring methodology proposed by [Deresa and Van Keilegom (2024)](https://doi.org/10.1080/01621459.2022.2161387). The approach presented in the latter paper is based on a parametric copula for the relation between the survival time and the dependent censoring time, and the parameter defining the copula does not need to be known. Instead, the copula parameter is estimated jointly with other finite model parameters by maximizing a Pseudo likelihood function.  Available copula functions in *SemiPar.depCens* package include Frank, Gumbel and Normal copulas. Only Weibull and Lognormal models are allowed for the censoring model, even though any parametric model that satisfies certain identifiability conditions could be used.  
+The goal of *SemiPar.depCens* package is to provide easy to use functions in *R* for estimation of the dependent censoring methodology proposed by Deresa and Van Keilegom (2024) <doi:10.1080/01621459.2022.2161387>. The approach presented in the latter paper is based on a parametric copula for the relation between the survival time and the dependent censoring time, and the parameter defining the copula does not need to be known. Instead, the copula parameter is estimated jointly with other finite model parameters by maximizing a Pseudo likelihood function.  Available copula functions in *SemiPar.depCens* package include Frank, Gumbel and Normal copulas. Only Weibull and Lognormal models are allowed for the censoring model, even though any parametric model that satisfies certain identifiability conditions could be used.  
 
 
 
@@ -89,7 +89,7 @@ summary(fitD)
 We can do bootstrapping by setting bootstrap = TRUE, but note that the algorithm may take long time to finish the computations, even after parallelization is used to speed up the work. The default number of bootstrap size is 50. Increasing number of bootstrap samples may produce more precise standard error estimates. 
 
 ```{r, fitB}
-fitD <- fitDepCens(resData = resData,X = X, W = W, bootstrap = TRUE, n.boot = 50, n.iter = 50)    
+fitD <- fitDepCens(resData = resData,X = X, W = W, bootstrap = TRUE, n.boot = 50)    
 summary(fitD)
 ```
 

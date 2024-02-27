@@ -51,30 +51,49 @@ errors for finite-dimensional parameters, the nonparametric cumulative hazard fu
 }
 \description{
 This function allows to estimate the dependency parameter along all other model parameters. First, estimates the cumulative hazard function, and
-then at the second stage it estimates other model parameters assuming that the cumulative hazard function is known.
+then at the second stage it estimates other model parameters assuming that the cumulative hazard function is known. The details for
+implementing the dependent censoring methodology can be found in Deresa and Van Keilegom (2023).
 }
 \examples{
 \dontrun{
 
-Transform the follic data to the form suitable for analysis
-follic = follic[order(follic$time),]
-Z = round(follic$time,digits = 3)
-d1 = as.numeric(follic$status==1)                   # survival time indicator
-d2 = as.numeric(follic$status==2)                   # censoring indicator
-x1 = as.numeric(follic$ch=="Y")                     # treatment indicator
-x2 = (follic$age-mean(follic$age))/sd(follic$age)   # standardize continuous variables
-x3 = (follic$hgb-mean(follic$hgb))/sd(follic$hgb)   # standardized hemoglobin
-x4 = as.numeric(follic$clinstg==1)                  # clinical stage
-X = cbind(x1,x2,x3,x4)                              # data matrix for T
-W = cbind(rep(1,length(Z)),X)                       # data matrix for C
-resData = data.frame("Z" = Z,"d1" = d1, "d2" = d2)  # resData should be a data frame
+# Toy data example to illustrate implementation
+n = 300
+beta = c(0.5)
+lambd = 0.35
+eta = c(0.9,0.4)
+X = cbind(rbinom(n,1,0.5))
+W = cbind(rep(1,n),rbinom(n,1,0.5))
+# generate dependency structure from Frank
+frank.cop <- copula::frankCopula(param = 5,dim = 2)
+U = copula::rCopula(n,frank.cop)
+T1 = (-log(1-U[,1]))/(lambd*exp(X*beta))           # Survival time
+T2 = (-log(1-U[,2]))^(1.1)*exp(W\%*\%eta)            # Censoring time
+A = runif(n,0,15)                                  # administrative censoring time
+Z = pmin(T1,T2,A)
+d1 = as.numeric(Z==T1)
+d2 = as.numeric(Z==T2)
+resData = data.frame("Z" = Z,"d1" = d1, "d2" = d2)   # should be data frame
 
-fitD <- fitDepCens(resData = resData, X = X, W = W, bootstrap = F)
- # bootstrap = F does not produce SE
-#fitD <- fitDepCens(resData = resData, X = X, W = W, bootstrap = T, n.boot = 100)
- summary(fitD)
-# bootstrapping takes long time, try smaller n.boot for a quick overview of results
+# Fit dependent censoring model
+
+fit <- fitDepCens(resData = resData, X = X, W = W, bootstrap = FALSE)
+
+# parameter estimates
+
+fit$parameterEstimates
+
+# summary fit results
+summary(fit)
+
+# plot cumulative hazard vs time
+
+plot(fit$observedTime, fit$cumhazardFunction, type = "l",xlab = "Time",
+ylab = "Estimated cumulative hazard function")
+
 
 }
-
+}
+\references{
+Deresa and Van Keilegom (2023). Copula based Cox proportional hazards models for dependent censoring, Journal of the American Statistical Association (in press).
 }

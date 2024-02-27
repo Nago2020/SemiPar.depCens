@@ -14,6 +14,42 @@
 #' @param dist The distribution to  be used for the dependent censoring C. Only two distributions are allowed, i.e, Weibull
 #' and lognormal distributions. With the value \code{"Weibull"} as the
 #'   default.
+#' @importFrom copula pCopula frankCopula gumbelCopula
+#'
+#' @return This function returns an estimated hazard function,  cumulative hazard function and distinct observed survival times;
+#'
+#' @examples
+#' \dontrun{
+#' n = 200
+#' beta = c(0.5)
+#' lambd = 0.35
+#' eta = c(0.9,0.4)
+#' X = cbind(rbinom(n,1,0.5))
+#' W = cbind(rep(1,n),rbinom(n,1,0.5))
+#' frank.cop <- copula::frankCopula(param = 5,dim = 2)
+#' U = copula::rCopula(n,frank.cop)
+#' T1 = (-log(1-U[,1]))/(lambd*exp(X*beta))         # Survival time'
+#' T2 = (-log(1-U[,2]))^(1.1)*exp(W%*%eta)          # Censoring time
+#' A = runif(n,0,15)                               # administrative censoring time
+#' Z = pmin(T1,T2,A)
+#' d1 = as.numeric(Z==T1)
+#' d2 = as.numeric(Z==T2)
+#' resData = data.frame("Z" = Z,"d1" = d1, "d2" = d2)
+#' theta = c(0.3,1,0.3,1,2)
+#'
+#' Estimate cumulative hazard function
+#'cumFit <- SolveL(theta, resData,X,W)
+#'
+#' cumulative hazard function
+#'cumhaz = cumFit$cumhaz
+#'time = cumFit$times
+#'
+#'# plot hazard vs time
+#'
+#'plot(time, cumhaz, type = "l",xlab = "Time",
+#'ylab = "Estimated cumulative hazard function")
+#'
+#'}
 #'
 #' @export
 
@@ -75,6 +111,43 @@ SolveL = function(theta,resData,X,W,
 #' @param resData Data matrix with three columns;  Z = the observed survival time, d1 = the censoring indicator of T
 #' and  d2 =  the censoring indicator of C.
 #' @param X Data matrix with covariates related to T
+#'
+#'
+#' @return This function returns an estimated hazard function,  cumulative hazard function and distinct observed survival times;
+#'
+#' @examples
+#' \dontrun{
+#' n = 200
+#' beta = c(0.5)
+#' lambd = 0.35
+#' eta = c(0.9,0.4)
+#' X = cbind(rbinom(n,1,0.5))
+#' frank.cop <- copula::frankCopula(param = 5,dim = 2)
+#' U = copula::rCopula(n,frank.cop)
+#' T1 = (-log(1-U[,1]))/(lambd*exp(X*beta))           # Survival time'
+#' T2 = (-log(1-U[,2]))^(1.1)*exp(W%*%eta)            # Censoring time
+#' A = runif(n,0,15)                                  # administrative censoring time
+#' Z = pmin(T1,T2,A)
+#' d1 = as.numeric(Z==T1)
+#' d2 = as.numeric(Z==T2)
+#' resData = data.frame("Z" = Z,"d1" = d1, "d2" = d2)
+#' theta = c(0.3,1,0.3,1)
+#'
+#' Estimate cumulative hazard function
+#'
+#'cumFit_ind <- SolveLI(theta, resData,X)
+#'
+#' cumulative hazard function
+#' cumhaz = cumFit_ind$cumhaz
+#' time = cumFit_ind$times
+#'
+#'# plot hazard vs time
+#'
+#'plot(time, cumhaz, type = "l",xlab = "Time",
+#' ylab = "Estimated cumulative hazard function")
+#'
+#'}
+#'
 #'
 #' @export
 

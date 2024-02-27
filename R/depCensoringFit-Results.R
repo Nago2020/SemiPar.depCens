@@ -4,6 +4,8 @@
 #'
 #' @param object Output of \code{\link{fitDepCens}} function
 #' @param ... Further arguments
+#' @return Summary of dependent censoring model fit in the form of table
+#'
 #' @export
 #'
 #'
@@ -131,9 +133,12 @@ summary.depFit <- function(object, ...) {
 #'
 #' @param object Output of \code{\link{fitIndepCens}} function
 #' @param ... Further arguments
+#'
+#' @return Summary of independent censoring model fit in the form of table
+#'
+#'
 #' @export
-#'
-#'
+
 
 summary.indepFit <- function(object, ...) {
 

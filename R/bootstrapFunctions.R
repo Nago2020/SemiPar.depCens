@@ -29,8 +29,8 @@
 #' @import foreach
 #' @import parallel
 #'
+#' @return Bootstrap standard errors for parameter estimates and for estimated cumulative hazard function.
 #'
-#' @export
 
 
 boot.fun = function(init,resData,X,W,lhat, cumL,dist,k,lb, ub, Obs.time,cop,n.boot, n.iter, eps){
@@ -138,7 +138,8 @@ boot.fun = function(init,resData,X,W,lhat, cumL,dist,k,lb, ub, Obs.time,cop,n.bo
 #' @importFrom survival coxph survreg
 #' @import foreach
 #'
-#' @export
+#' @return Bootstrap standard errors for parameter estimates and for estimated cumulative hazard function.
+#'
 
 
 boot.funI = function(init,resData,X,W,lhat, cumL,dist,k,lb,ub, Obs.time,n.boot, n.iter, eps){

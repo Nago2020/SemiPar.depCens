@@ -3,17 +3,17 @@
 
 The goal of *SemiPar.depCens* package is to provide easy to use
 functions in *R* for estimation of the dependent censoring methodology
-proposed by [Deresa and Van Keilegom
-(2024)](https://doi.org/10.1080/01621459.2022.2161387). The approach
-presented in the latter paper is based on a parametric copula for the
-relation between the survival time and the dependent censoring time, and
-the parameter defining the copula does not need to be known. Instead,
-the copula parameter is estimated jointly with other finite model
-parameters by maximizing a Pseudo likelihood function. Available copula
-functions in *SemiPar.depCens* package include Frank, Gumbel and Normal
-copulas. Only Weibull and Lognormal models are allowed for the censoring
-model, even though any parametric model that satisfies certain
-identifiability conditions could be used.
+proposed by Deresa and Van Keilegom (2024)
+<doi:10.1080/01621459.2022.2161387>. The approach presented in the
+latter paper is based on a parametric copula for the relation between
+the survival time and the dependent censoring time, and the parameter
+defining the copula does not need to be known. Instead, the copula
+parameter is estimated jointly with other finite model parameters by
+maximizing a Pseudo likelihood function. Available copula functions in
+*SemiPar.depCens* package include Frank, Gumbel and Normal copulas. Only
+Weibull and Lognormal models are allowed for the censoring model, even
+though any parametric model that satisfies certain identifiability
+conditions could be used.
 
 ## Installation
 
@@ -106,7 +106,7 @@ bootstrap size is 50. Increasing number of bootstrap samples may produce
 more precise standard error estimates.
 
 ``` r
-fitD <- fitDepCens(resData = resData,X = X, W = W, bootstrap = TRUE, n.boot = 50, n.iter = 50)    
+fitD <- fitDepCens(resData = resData,X = X, W = W, bootstrap = TRUE, n.boot = 50)    
 summary(fitD)
 #> ----------------------------------------------------------------------------------------------------
 #> Summary of dependent censoring model
@@ -115,7 +115,7 @@ summary(fitD)
 #> Survival submodel: Cox proportional hazards model
 #>  
 #>         Estimate Boot.SE Pvalue
-#> treat     -0.347   0.170  0.042
+#> treat     -0.347   0.171  0.042
 #> age        0.352   0.067  0.000
 #> hgb        0.042   0.058  0.463
 #> clinstg   -0.646   0.119  0.000
@@ -136,7 +136,7 @@ summary(fitD)
 #> kendall's tau correlation :
 #> 
 #>     tau Boot.SE  Pvalue 
-#>   0.336   0.103   0.001
+#>   0.336   0.102   0.001
 ```
 
 ### Fit independent censoring model
@@ -160,7 +160,7 @@ summary(fitI)
 #> treat     -0.365   0.174  0.036
 #> age        0.329   0.066  0.000
 #> hgb        0.041   0.061  0.498
-#> clinstg   -0.648   0.124  0.000
+#> clinstg   -0.648   0.123  0.000
 #> 
 #>  
 #> Censoring submodel:  Weibull

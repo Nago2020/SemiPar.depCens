@@ -14,7 +14,6 @@
 
 #' @return maximized log-likelihood value
 #'
-#' @export
 
 
 PseudoL = function(theta,resData,X,W,lhat,cumL,cop,dist){
@@ -128,7 +127,6 @@ PseudoL = function(theta,resData,X,W,lhat,cumL,cop,dist){
 #'
 #' @return Maximized log-likelihood value
 #'
-#' @export
 
 
 LikCopInd <- function(theta,resData,X,W,lhat,cumL,dist){ # gamma = 0

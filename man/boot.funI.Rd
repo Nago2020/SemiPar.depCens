@@ -53,6 +53,9 @@ default}
 
 \item{eps}{Convergence error. This is set by the user in such away that the desired convergence is met; the default is \code{eps = 1e-3}}
 }
+\value{
+Bootstrap standard errors for parameter estimates and for estimated cumulative hazard function.
+}
 \description{
 This function estimates the bootstrap standard errors for the finite-dimensional model parameters and for the non-parametric cumulative
 hazard function under the assumption of independent censoring. Parallel computing using foreach has been used to speed up the computation.
