@@ -115,7 +115,7 @@ summary(fitD)
 #> Survival submodel: Cox proportional hazards model
 #>  
 #>         Estimate Boot.SE Pvalue
-#> treat     -0.347   0.171  0.042
+#> treat     -0.347   0.170  0.042
 #> age        0.352   0.067  0.000
 #> hgb        0.042   0.058  0.463
 #> clinstg   -0.646   0.119  0.000
@@ -124,8 +124,8 @@ summary(fitD)
 #> Censoring submodel:  Weibull
 #>  
 #>           Estimate Boot.SE Pvalue
-#> Intercept    2.803   0.136  0.000
-#> treat        0.125   0.136  0.356
+#> Intercept    2.803   0.135  0.000
+#> treat        0.125   0.135  0.356
 #> age         -0.658   0.071  0.000
 #> hgb         -0.038   0.051  0.452
 #> clinstg      0.411   0.125  0.001
