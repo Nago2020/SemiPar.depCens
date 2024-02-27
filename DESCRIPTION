@@ -1,7 +1,7 @@
 Package: SemiPar.depCens
 Type: Package
 Title: Copula Based Cox Proportional Hazards Models for Dependent Censoring
-Version: 0.1.0
+Version: 0.1.1
 Date: 2024-02-27
 Author: Negera Wakgari Deresa and Ingrid Van Keilegom
 Maintainer: Negera Wakgari Deresa <negera.deresa@gmail.com>
