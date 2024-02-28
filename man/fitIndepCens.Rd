@@ -49,7 +49,7 @@ This function allows to estimate all model parameters under the assumption of in
 then at the second stage it estimates other model parameters assuming that the cumulative hazard is known.
 }
 \examples{
-\dontrun{
+\donttest{
 
 # Toy data example to illustrate implementation
 n = 300

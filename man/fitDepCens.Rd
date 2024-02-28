@@ -55,7 +55,7 @@ then at the second stage it estimates other model parameters assuming that the c
 implementing the dependent censoring methodology can be found in Deresa and Van Keilegom (2023).
 }
 \examples{
-\dontrun{
+\donttest{
 
 # Toy data example to illustrate implementation
 n = 300
@@ -90,8 +90,6 @@ summary(fit)
 
 plot(fit$observedTime, fit$cumhazardFunction, type = "l",xlab = "Time",
 ylab = "Estimated cumulative hazard function")
-
-
 }
 }
 \references{

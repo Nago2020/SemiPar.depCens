@@ -75,17 +75,17 @@ PseudoL = function(theta,resData,X,W,lhat,cumL,cop,dist){
 
   if (cop == "Frank")                                         # Frank copula
   {
-    frank.cop = frankCopula(gm, dim = 2)
+    frank.cop = copula::frankCopula(gm, dim = 2)
     cp1 = (exp(- gm*G1)*(exp(- gm*G2)-1))/(exp(-gm)-1 + (exp(-gm*G1)-1)*(exp(-gm*G2)-1))
     cp2 = (exp(- gm*G2)*(exp(- gm*G1)-1))/(exp(-gm)-1 + (exp(-gm*G1)-1)*(exp(-gm*G2)-1))
-    z6 =  1-G1-G2+pCopula(PD,frank.cop)
+    z6 =  1-G1-G2+copula::pCopula(PD,frank.cop)
     z6 =   pmax(z6,1e-10)
   }else if (cop == "Gumbel")                                       # Gumbel copula
   {
-    gumb.cop = gumbelCopula(gm, dim = 2)
-    cp1 = pCopula(PD,gumb.cop)*((-log(G1))^gm+(-log(G2))^gm)^(-1+1/gm)*(-log(G1))^(gm-1)/G1
-    cp2 = pCopula(PD,gumb.cop)*((-log(G1))^gm+(-log(G2))^gm)^(-1+1/gm)*(-log(G2))^(gm-1)/G2
-    z6 =  1-G1-G2+pCopula(PD,gumb.cop)
+    gumb.cop = copula::gumbelCopula(gm, dim = 2)
+    cp1 = copula::pCopula(PD,gumb.cop)*((-log(G1))^gm+(-log(G2))^gm)^(-1+1/gm)*(-log(G1))^(gm-1)/G1
+    cp2 = copula::pCopula(PD,gumb.cop)*((-log(G1))^gm+(-log(G2))^gm)^(-1+1/gm)*(-log(G2))^(gm-1)/G2
+    z6 =  1-G1-G2+copula::pCopula(PD,gumb.cop)
     z6 =   pmax(z6,1e-10)
   }else if (cop == "Normal")     # normal
   {

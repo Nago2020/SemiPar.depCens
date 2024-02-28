@@ -38,7 +38,7 @@ This function estimates the cumulative hazard function of survival time (T) unde
 makes use of the estimating equations derived based on martingale ideas.
 }
 \examples{
-\dontrun{
+\donttest{
 n = 200
 beta = c(0.5)
 lambd = 0.35
@@ -49,17 +49,15 @@ frank.cop <- copula::frankCopula(param = 5,dim = 2)
 U = copula::rCopula(n,frank.cop)
 T1 = (-log(1-U[,1]))/(lambd*exp(X*beta))         # Survival time'
 T2 = (-log(1-U[,2]))^(1.1)*exp(W\%*\%eta)          # Censoring time
-A = runif(n,0,15)                               # administrative censoring time
+A = runif(n,0,15)                                # administrative censoring time
 Z = pmin(T1,T2,A)
 d1 = as.numeric(Z==T1)
 d2 = as.numeric(Z==T2)
 resData = data.frame("Z" = Z,"d1" = d1, "d2" = d2)
 theta = c(0.3,1,0.3,1,2)
 
-Estimate cumulative hazard function
+# Estimate cumulative hazard function
 cumFit <- SolveL(theta, resData,X,W)
-
-cumulative hazard function
 cumhaz = cumFit$cumhaz
 time = cumFit$times
 

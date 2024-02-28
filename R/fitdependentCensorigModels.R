@@ -28,7 +28,7 @@
 #' values  of \code{n.boot} are recommended for obtaining good estimates of bootstrap standard errors.
 #'  @importFrom copula pCopula frankCopula gumbelCopula tau
 #' @importFrom stats nlminb pnorm  qnorm
-#' @importFrom survival coxph survreg
+#' @importFrom survival coxph survreg Surv
 #'
 #' @return This function returns a fit of dependent censoring model; parameter estimates, estimate of the cumulative hazard function, bootstrap standard
 #' errors for finite-dimensional parameters, the nonparametric cumulative hazard function, etc.
@@ -36,7 +36,7 @@
 #'
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'
 #' # Toy data example to illustrate implementation
 #' n = 300
@@ -71,8 +71,6 @@
 #'
 #' plot(fit$observedTime, fit$cumhazardFunction, type = "l",xlab = "Time",
 #' ylab = "Estimated cumulative hazard function")
-#'
-#'
 #'}
 #' @export
 
@@ -164,8 +162,8 @@ fitDepCens = function(resData,X,W,
     if (flag>n.iter)                                                 # Stop after iteration 20; this usually gives sufficient convergence results
     {
       flag=0;
-      print("The maximum number of iterations reached before convergence criteria is satisified. Better convergence may be obtained by increasing n.iter")
-      print(paste0("The current convergence error (eps) is ", Distance(b,a)))
+      warning("The maximum number of iterations reached before convergence criteria is satisified. Better convergence may be obtained by increasing n.iter")
+      warning(paste0("The current convergence error (eps) is ", Distance(b,a)))
       break;
     }
   }

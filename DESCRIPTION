@@ -3,13 +3,19 @@ Type: Package
 Title: Copula Based Cox Proportional Hazards Models for Dependent Censoring
 Version: 0.1.1
 Date: 2024-02-27
-Author: Negera Wakgari Deresa and Ingrid Van Keilegom
+Authors@R: c(
+    person("Negera Wakgari", "Deresa", email = "negera.deresa@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-1302-3725")),
+    person("Ingrid", "Van Keilegom", email = "ingrid.vankeilegom@kuleuven.be", role = "aut", comment = c(ORCID = "0000-0001-8827-7642")))
 Maintainer: Negera Wakgari Deresa <negera.deresa@gmail.com>
-Description: Copula based Cox proportional hazards models for survival data subject to dependent censoring. This approach does not assume that the parameter defining 
-    the copula is known. The dependency parameter is estimated with other finite model parameters by maximizing a Pseudo likelihood function. The cumulative hazard function is 
-    estimated via estimating equations derived based on martingale ideas. Available copula functions include Frank, Gumbel and Normal copulas. Only Weibull and 
-    Lognormal models are allowed for the censoring model, even though any parametric model that satisfies certain identifiability conditons could be used. Implemented methods are described 
-    in the article ``Copula based Cox proportional hazards models for dependent censoring" by Deresa and Van Keilegom (2023) <doi:10.1080/01621459.2022.2161387>. 
+Description: Copula based Cox proportional hazards models for survival data subject to dependent 
+    censoring. This approach does not assume that the parameter defining the copula is known. The 
+    dependency parameter is estimated with other finite model parameters by maximizing a Pseudo 
+    likelihood function. The cumulative hazard function is estimated via estimating equations 
+    derived based on martingale ideas. Available copula functions include Frank, Gumbel and Normal
+    copulas. Only Weibull and lognormal models are allowed for the censoring model, even though any
+    parametric model that satisfies certain identifiability conditions could be used. Implemented 
+    methods are described in the article "Copula based Cox proportional hazards models for dependent
+    censoring" by Deresa and Van Keilegom (2023) <doi:10.1080/01621459.2022.2161387>. 
 Imports: survival, copula, stats, foreach, parallel, doParallel, pbivnorm
 License: GPL-3
 Depends: R (>= 3.5.0)

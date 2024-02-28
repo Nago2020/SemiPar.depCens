@@ -22,7 +22,7 @@
 #' @param n.boot Number of bootstrap samples to use in the estimation of bootstrap standard errors if \code{bootstrap = TRUE}. The default is n.boot = 50. But, higher
 #' values  of \code{n.boot} are recommended for obtaining good estimates of bootstrap standard errors.
 #' @importFrom stats nlminb pnorm  qnorm sd
-#' @importFrom survival coxph survreg
+#' @importFrom survival coxph survreg Surv
 #'
 #' @return This function returns a fit of independent censoring model; parameter estimates, estimate of the cumulative hazard function, bootstrap standard
 #' errors for finite-dimensional parameters, the nonparametric cumulative hazard function, etc.
@@ -30,7 +30,7 @@
 #'
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'
 #' # Toy data example to illustrate implementation
 #' n = 300
@@ -95,8 +95,8 @@ fitIndepCens = function(resData,X,W,
   }
 
   if(is.null(start)){                                    # obtain initial values by fitting standard models
-      fit1 = coxph(Surv(Z,d1)~X)
-      fit2 = survreg(Surv(Z,d2)~W-1)
+      fit1 = survival::coxph(Surv(Z,d1)~X)
+      fit2 = survival::survreg(Surv(Z,d2)~W-1)
       start = c(fit1$coefficients,fit2$coefficients,fit2$scale)
   }
   if(length(start)!= k+l+1)
@@ -140,8 +140,8 @@ fitIndepCens = function(resData,X,W,
     if (flag>n.iter)                                    # stop after iteration 30; this usually gives sufficient convergence results
     {
       flag=0;
-      print("The maximum number of iterations reached before convergence criteria is satisified. Better convergence may be obtained by increasing n.iter")
-      print(paste0("The current convergence error (eps) is", Distance(b,a)))
+      warning("The maximum number of iterations reached before convergence criteria is satisified. Better convergence may be obtained by increasing n.iter")
+      warning(paste0("The current convergence error (eps) is", Distance(b,a)))
       break;
     }
   }

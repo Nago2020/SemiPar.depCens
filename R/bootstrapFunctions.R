@@ -44,7 +44,6 @@ boot.fun = function(init,resData,X,W,lhat, cumL,dist,k,lb, ub, Obs.time,cop,n.bo
   doParallel::registerDoParallel(cl = my.cluster)
 
   boot = foreach(b = 1:B, .packages= c('survival', 'copula', 'pbivnorm'), .export = c("PseudoL", "SolveL","Distance", "CompC", "Longfun", "SearchIndicate")) %dopar% {
-    set.seed(214356+b)
     samp1 = sample(length(resData$Z),replace = TRUE)
     resData_b = resData[samp1,]
     Zb = resData_b$Z
@@ -109,8 +108,6 @@ boot.fun = function(init,resData,X,W,lhat, cumL,dist,k,lb, ub, Obs.time,cop,n.bo
 
 
 
-
-
 #' @title  Nonparametric bootstrap approach for the independent censoring model
 
 #' @description This function estimates the bootstrap standard errors for the finite-dimensional model parameters and for the non-parametric cumulative
@@ -153,7 +150,6 @@ boot.funI = function(init,resData,X,W,lhat, cumL,dist,k,lb,ub, Obs.time,n.boot, 
   doParallel::registerDoParallel(cl = my.cluster)
 
   boot = foreach(b = 1:B, .packages= c('survival'), .export = c("LikCopInd", "SolveLI","Distance", "Longfun", "SearchIndicate")) %dopar% {
-    set.seed(214356+b)
     samp1 = sample(length(resData$Z),replace = TRUE)
     resData_b = resData[samp1,]
     Zb = resData_b$Z
