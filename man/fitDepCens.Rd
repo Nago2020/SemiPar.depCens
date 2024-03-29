@@ -77,7 +77,7 @@ colnames(X) <- "cov.surv"
 
 # Fit dependent censoring model
 
-fit <- fitDepCens(resData = resData, X = X, W = W, bootstrap = TRUE)
+fit <- fitDepCens(resData = resData, X = X, W = W, bootstrap = FALSE)
 
 # parameter estimates
 

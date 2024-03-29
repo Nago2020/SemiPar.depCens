@@ -69,6 +69,9 @@ d1 = as.numeric(Z==T1)
 d2 = as.numeric(Z==T2)
 resData = data.frame("Z" = Z,"d1" = d1, "d2" = d2)     # should be data frame
 
+colnames(W) <- c("ones","cov1")
+colnames(X) <- "cov.surv"
+
 # Fit independent censoring model
 
 fitI <- fitIndepCens(resData = resData, X = X, W = W, bootstrap = FALSE)
