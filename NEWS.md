@@ -1,7 +1,8 @@
+
 # SemiPar.depCens 0.1.2
 
-# SemiPar.depCens 0.1.1
+* Updating the bootstrap functions to improve parallel computing
 
-# SemiPar.depCens 0.1.0
+# SemiPar.depCens 0.1.1
 
 * Initial CRAN submission.
