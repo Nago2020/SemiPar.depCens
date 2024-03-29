@@ -34,17 +34,9 @@
 
 
 boot.fun = function(init,resData,X,W,lhat, cumL,dist,k,lb, ub, Obs.time,cop,n.boot, n.iter, eps){
-  B = n.boot                                    # number of bootstrap samples
+  B = n.boot                                     # number of bootstrap samples
+  n.cores <- parallel::detectCores() - 1
 
-  chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
-
-  if (nzchar(chk) && chk == "TRUE") {
-    # use 2 cores in CRAN/Travis/AppVeyor
-    n.cores <- 2L
-  } else {
-    # use all cores in devtools::test()
-    n.cores <- parallel::detectCores() - 1
-  }
   my.cluster <- parallel::makeCluster(
     n.cores,
     type = "PSOCK"
@@ -151,15 +143,8 @@ boot.fun = function(init,resData,X,W,lhat, cumL,dist,k,lb, ub, Obs.time,cop,n.bo
 
 boot.funI = function(init,resData,X,W,lhat, cumL,dist,k,lb,ub, Obs.time,n.boot, n.iter, eps){
   B = n.boot                                     # number of bootstrap samples
-  chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
+  n.cores <- parallel::detectCores() - 1
 
-  if (nzchar(chk) && chk == "TRUE") {
-    # use 2 cores in CRAN/Travis/AppVeyor
-    n.cores <- 2L
-  } else {
-    # use all cores in devtools::test()
-    n.cores <- parallel::detectCores() - 1
-  }
   my.cluster <- parallel::makeCluster(
     n.cores,
     type = "PSOCK"

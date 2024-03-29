@@ -9,7 +9,7 @@ resData <- data$resData
 X = data$X
 W = data$W
 
-fit <- fitDepCens(resData = data$resData, X = X, W = W, bootstrap = TRUE)
+fit <- fitDepCens(resData = data$resData, X = X, W = W, bootstrap = FALSE)
 parE <- fit$parameterEstimates
 cop <- fit$copula
 dist <- fit$censoringDistribution
