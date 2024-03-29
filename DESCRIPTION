@@ -1,7 +1,7 @@
 Package: SemiPar.depCens
 Type: Package
 Title: Copula Based Cox Proportional Hazards Models for Dependent Censoring
-Version: 0.1.1
+Version: 0.1.2
 Date: 2024-02-27
 Authors@R: c(
     person("Negera Wakgari", "Deresa", email = "negera.deresa@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-1302-3725")),
