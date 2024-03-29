@@ -26,7 +26,7 @@
 #' @param bootstrap A boolean indicating whether to compute bootstrap standard errors for making inferences.
 #' @param n.boot Number of bootstrap samples to use in the estimation of bootstrap standard errors if \code{bootstrap = TRUE}. The default is n.boot = 50. But, higher
 #' values  of \code{n.boot} are recommended for obtaining good estimates of bootstrap standard errors.
-#'  @importFrom copula pCopula frankCopula gumbelCopula tau
+#' @importFrom copula pCopula frankCopula gumbelCopula tau
 #' @importFrom stats nlminb pnorm  qnorm
 #' @importFrom survival coxph survreg Surv
 #'
@@ -37,7 +37,6 @@
 #'
 #' @examples
 #' \donttest{
-#'
 #' # Toy data example to illustrate implementation
 #' n = 300
 #' beta = c(0.5)
@@ -55,10 +54,12 @@
 #' d1 = as.numeric(Z==T1)
 #' d2 = as.numeric(Z==T2)
 #' resData = data.frame("Z" = Z,"d1" = d1, "d2" = d2)   # should be data frame
+#' colnames(W) <- c("ones","cov1")
+#' colnames(X) <- "cov.surv"
 #'
 #' # Fit dependent censoring model
 #'
-#'fit <- fitDepCens(resData = resData, X = X, W = W, bootstrap = FALSE)
+#'fit <- fitDepCens(resData = resData, X = X, W = W, bootstrap = TRUE)
 #'
 #' # parameter estimates
 #'
@@ -72,6 +73,7 @@
 #' plot(fit$observedTime, fit$cumhazardFunction, type = "l",xlab = "Time",
 #' ylab = "Estimated cumulative hazard function")
 #'}
+#'
 #' @export
 
 
@@ -92,6 +94,9 @@ fitDepCens = function(resData,X,W,
   Z = resData$Z
   d1 = resData$d1
   d2 = resData$d2
+
+  if(is.vector(W))
+    stop("W should be a matrix of dimension larger than 1")
 
   if (is.vector(X)) k = 1
   if(!is.vector(X)) k = dim(X)[2]
@@ -159,7 +164,7 @@ fitDepCens = function(resData,X,W,
     parhat = nlminb(start = a,PseudoL,resData = resData,X = X,W = W,lhat = lhat,cumL = cumL,cop = cop,dist = dist,lower = lb ,upper =  ub, control = list(eval.max=300,iter.max=200))$par
     b = parhat
     flag = flag+1;
-    if (flag>n.iter)                                                 # Stop after iteration 20; this usually gives sufficient convergence results
+    if (flag>n.iter)                                  # Stop after iteration 20; this usually gives sufficient convergence results
     {
       flag=0;
       warning("The maximum number of iterations reached before convergence criteria is satisified. Better convergence may be obtained by increasing n.iter")
@@ -188,7 +193,7 @@ fitDepCens = function(resData,X,W,
 
   depObj <- c(list("parameterEstimates" = parhat,"copula" = cop, "censoringDistribution" = dist, "bootstrap" = bootstrap, "dimX" = k, "dimW" = l,"observedTime" = cumHat$times,"hazardFunction" = cumHat$lambda, "cumhazardFunction" = cumHat$cumhaz),fitObj)
 
-  class(depObj) <- append(class(depObj), "depFit")             # dependent censoring fit object
+  class(depObj) <- append(class(depObj), "depFit")                   # dependent censoring fit object
 
   return(depObj)
 }

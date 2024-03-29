@@ -69,8 +69,8 @@ SolveL = function(theta,resData,X,W,
 
   if (is.vector(X)){
     k = 1
-    mu1 = theta[1]*X}
-  else if(!is.vector(X)){
+    mu1 = theta[1]*X
+  }else {
     k = dim(X)[2]
     mu1 = X%*%theta[1:k]
   }
@@ -81,9 +81,6 @@ SolveL = function(theta,resData,X,W,
 
   T1 <- c(0,sort(unique(Z[d1 == 1])))
   m = length(T1)
-  k = dim(X)[2]
-  beta = theta[1:k]
-
   L = rep(0,m)
   L[1] = 0
   L[2] = sum((Z==T1[2]))/sum((Z>=T1[2])*exp(mu1))
@@ -161,8 +158,8 @@ SolveLI = function(theta,resData,X){
 
   if (is.vector(X)){
     k = 1
-    mu1 = theta[1]*X}
-  else if(!is.vector(X)){
+    mu1 = theta[1]*X
+  }else{
     k = dim(X)[2]
     mu1 = X%*%theta[1:k]
   }
@@ -171,9 +168,6 @@ SolveLI = function(theta,resData,X){
 
   T1 <- c(sort(unique(Z[d1 == 1])))
   m = length(T1)
-  k = dim(X)[2]
-  beta = theta[1:k]
-
   L = rep(0,m)
   for (i in 1:m){
     L[i] <- sum(Z == T1[i])/sum((Z>=T1[i])*exp(mu1))
@@ -198,10 +192,16 @@ CompC = function(theta,t,X,W,ld,cop,dist){
 
   if (is.vector(X)){
     k = 1
-    beta = theta[1:k]}
-  else if(!is.vector(X)){
+    beta = theta[1]
+    # Distribution of T
+    G1 = 1-exp(-ld*exp(X*beta))            # Cox model for T
+    B0 = X*beta-ld*exp(X*beta)
+    }else{
     k = dim(X)[2]
     beta = theta[1:k]
+    # Distribution of T
+    G1 = 1-exp(-ld*exp(X%*%beta))          # Cox model for T
+    B0 = X%*%beta-ld*exp(X%*%beta)
   }
   l = dim(W)[2]
   eta = theta[(k+1):(l+k)]
@@ -209,21 +209,17 @@ CompC = function(theta,t,X,W,ld,cop,dist){
   gm = theta[(l+k+2)]
   lfun = (W%*%eta)
 
-
-  # Distribution of T
-  G1 = 1-exp(-ld*exp(X%*%beta))       # Cox model for T
-
   # Distribution of C
 
-  if (dist == "Weibull"){               # Weibull margin
+  if (dist == "Weibull"){                        # Weibull margin
     G2 = 1-exp(-exp((log(t)-W%*%eta)/nu))
-  }else if (dist == "lognormal")         # Log-normal margin
+  }else if (dist == "lognormal"){                # Log-normal margin
     G2 = pnorm((log(t)-W%*%eta)/nu)
-  else
+    }else
     stop("Only Weibull and lognormal distributions are supported for C")
 
 
-  # avoid numerical issues
+  # Avoid numerical issues
   G1[is.nan(G1)] = 1e-10
   G2[is.nan(G2)] = 1e-10
 
@@ -236,7 +232,7 @@ CompC = function(theta,t,X,W,ld,cop,dist){
 
   PD = cbind(G1,G2)                         # Join distributions
 
-  if (cop == "Frank")                      # Frank copula
+  if (cop == "Frank")                       # Frank copula
   {
     frank.cop = frankCopula(gm, dim = 2)
     cp1 = (exp(- gm*G1)*(exp(- gm*G2)-1))/(exp(-gm)-1 + (exp(-gm*G1)-1)*(exp(-gm*G2)-1))
@@ -262,7 +258,7 @@ CompC = function(theta,t,X,W,ld,cop,dist){
     z6 =   pmax(z6,1e-20)
   }else
     stop("Entered copula function is not supported")
-  B0 = X%*%beta-ld*exp(X%*%beta)
+
   B1 = log(pmax(1e-10,1-cp1))-log(z6)
   tot = B0+B1
   return(tot)

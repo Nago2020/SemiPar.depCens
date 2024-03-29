@@ -35,8 +35,16 @@
 
 boot.fun = function(init,resData,X,W,lhat, cumL,dist,k,lb, ub, Obs.time,cop,n.boot, n.iter, eps){
   B = n.boot                                    # number of bootstrap samples
-  b = 1
-  n.cores <- parallel::detectCores() - 1
+
+  chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
+
+  if (nzchar(chk) && chk == "TRUE") {
+    # use 2 cores in CRAN/Travis/AppVeyor
+    n.cores <- 2L
+  } else {
+    # use all cores in devtools::test()
+    n.cores <- parallel::detectCores() - 1
+  }
   my.cluster <- parallel::makeCluster(
     n.cores,
     type = "PSOCK"
@@ -47,19 +55,21 @@ boot.fun = function(init,resData,X,W,lhat, cumL,dist,k,lb, ub, Obs.time,cop,n.bo
     samp1 = sample(length(resData$Z),replace = TRUE)
     resData_b = resData[samp1,]
     Zb = resData_b$Z
-    if(k==1){ Xb = X[samp1]
-    }else Xb = X[samp1,]
+    if(k==1){
+      Xb = X[samp1]
+    }else{
+     Xb = X[samp1,]
+     }
     Wb = W[samp1,]
 
     # Initial step of estimation
 
     parhatb = nlminb(start = init, PseudoL, resData = resData_b,X = Xb,W = Wb,lhat = lhat,cumL = cumL,cop = cop,dist = dist,lower = lb ,upper =  ub, control = list(eval.max=300,iter.max=200))$par
-
     aboot = init
     bboot = parhatb
     flag = 0
 
-    while (Distance(bboot,aboot)>eps){                                             # doing this while loop until the desired convergence criteria are met
+    while (Distance(bboot,aboot)>eps){                            # doing this while loop until the desired convergence criteria are met
       aboot = bboot
       res = SolveL(aboot,resData_b,Xb,Wb,cop,dist)
       lsml = res$lambda
@@ -140,9 +150,16 @@ boot.fun = function(init,resData,X,W,lhat, cumL,dist,k,lb, ub, Obs.time,cop,n.bo
 
 
 boot.funI = function(init,resData,X,W,lhat, cumL,dist,k,lb,ub, Obs.time,n.boot, n.iter, eps){
-  B = n.boot                                    # number of bootstrap samples
-  b = 1
-  n.cores <- parallel::detectCores() - 1
+  B = n.boot                                     # number of bootstrap samples
+  chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
+
+  if (nzchar(chk) && chk == "TRUE") {
+    # use 2 cores in CRAN/Travis/AppVeyor
+    n.cores <- 2L
+  } else {
+    # use all cores in devtools::test()
+    n.cores <- parallel::detectCores() - 1
+  }
   my.cluster <- parallel::makeCluster(
     n.cores,
     type = "PSOCK"

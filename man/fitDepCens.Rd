@@ -40,8 +40,7 @@ by fitting a Cox model for survival time T and a Weibull model for dependent cen
 \item{bootstrap}{A boolean indicating whether to compute bootstrap standard errors for making inferences.}
 
 \item{n.boot}{Number of bootstrap samples to use in the estimation of bootstrap standard errors if \code{bootstrap = TRUE}. The default is n.boot = 50. But, higher
-values  of \code{n.boot} are recommended for obtaining good estimates of bootstrap standard errors.
-@importFrom copula pCopula frankCopula gumbelCopula tau}
+values  of \code{n.boot} are recommended for obtaining good estimates of bootstrap standard errors.}
 
 \item{eps}{Convergence error. This is set by the user in such away that the desired convergence is met; the default is \code{eps = 1e-3}.}
 }
@@ -56,7 +55,6 @@ implementing the dependent censoring methodology can be found in Deresa and Van 
 }
 \examples{
 \donttest{
-
 # Toy data example to illustrate implementation
 n = 300
 beta = c(0.5)
@@ -74,10 +72,12 @@ Z = pmin(T1,T2,A)
 d1 = as.numeric(Z==T1)
 d2 = as.numeric(Z==T2)
 resData = data.frame("Z" = Z,"d1" = d1, "d2" = d2)   # should be data frame
+colnames(W) <- c("ones","cov1")
+colnames(X) <- "cov.surv"
 
 # Fit dependent censoring model
 
-fit <- fitDepCens(resData = resData, X = X, W = W, bootstrap = FALSE)
+fit <- fitDepCens(resData = resData, X = X, W = W, bootstrap = TRUE)
 
 # parameter estimates
 
@@ -91,6 +91,7 @@ summary(fit)
 plot(fit$observedTime, fit$cumhazardFunction, type = "l",xlab = "Time",
 ylab = "Estimated cumulative hazard function")
 }
+
 }
 \references{
 Deresa and Van Keilegom (2023). Copula based Cox proportional hazards models for dependent censoring, Journal of the American Statistical Association (in press).

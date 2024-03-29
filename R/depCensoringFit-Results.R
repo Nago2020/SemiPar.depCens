@@ -34,18 +34,23 @@ summary.depFit <- function(object, ...) {
     cat("\n")
     cat("Survival submodel: Cox proportional hazards model")
     cat("\n \n")
+
     surv.out <- out.res[1:k,]
-    if(dim(surv.out)[1]>=2){
+    if(k>=2){
       if(is.null(rownames(surv.out))){
         colName <- cbind(c(rep("X",k)),c(seq(1:k)))
         rownames(surv.out) <- noquote(apply(colName,1,paste, collapse = "_"))
-      }else {
-        rownames(surv.out) <- gsub("X", "", rownames(surv.out))
-      }
+       }else {
+         rownames(surv.out) <-  gsub("X", "", rownames(surv.out))
+       }
       colnames(surv.out) <- c("Estimate", "Boot.SE", "Pvalue")
+      surv.out <- round(surv.out, 3)
+      print(surv.out)
+    }else{
+      names(surv.out) <- c("Estimate", "Boot.SE", "Pvalue")
+      surv.out <- round(surv.out, 3)
+      print(surv.out)
     }
-     surv.out <- round(surv.out, 3)
-     print(surv.out)
 
     cat("\n \n")
     cat("Censoring submodel: ", object$censoringDistribution)
@@ -57,7 +62,7 @@ summary.depFit <- function(object, ...) {
       colC <- noquote(apply(colName,1,paste, collapse = "_"))
       cens.out <- rbind(cens.out,out.res[(l+k+1),])
       rownames(cens.out) <- c("Intercept",colC[-1], "sigma")
-    }else {
+    } else {
       colC <- rownames(cens.out)
       cens.out <- rbind(cens.out,out.res[(l+k+1),])
       rownames(cens.out) <- c("Intercept",colC[-1], "sigma")
@@ -96,7 +101,7 @@ summary.depFit <- function(object, ...) {
     }else if(k==1){
       if(is.null(names(surv.out))){
         names(surv.out) <- "X1"
-      }else  names(surv.out) <- gsub("X","",names(surv.out))
+      }else  names(surv.out) <- names(surv.out)
     }
     print(round(surv.out, 3))
 
