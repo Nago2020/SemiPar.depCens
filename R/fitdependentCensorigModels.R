@@ -3,12 +3,10 @@
 #'
 #' @description This function allows to estimate the dependency parameter along all other model parameters. First, estimates the cumulative hazard function, and
 #' then at the second stage it estimates other model parameters assuming that the cumulative hazard function is known. The details for
-#' implementing the dependent censoring methodology can be found in Deresa and Van Keilegom (2023).
+#' implementing the dependent censoring methodology can be found in Deresa and Van Keilegom (2024).
 #'
-#' @references Deresa and Van Keilegom (2023). Copula based Cox proportional hazards models for dependent censoring, Journal of the American Statistical Association (in press).
+#' @references Deresa and Van Keilegom (2024). Copula based Cox proportional hazards models for dependent censoring, Journal of the American Statistical Association, 119:1044-1054.
 #'
-#'
-
 #' @param start Initial values for the finite dimensional parameters. If \code{start} is NULL, the initial values will be obtained
 #' by fitting a Cox model for survival time T and a Weibull model for dependent censoring C.
 #'
@@ -21,11 +19,12 @@
 #' @param dist The distribution to be used for the censoring time C. Only two distributions are allowed, i.e, Weibull
 #' and lognormal distributions. With the value \code{"Weibull"} as the
 #' default.
-#' @param eps Convergence error. This is set by the user in such away that the desired convergence is met; the default is \code{eps = 1e-3}.
-#' @param n.iter Number of iterations; the default is \code{n.iter = 20}. The larger the number of iterations, the longer the computational time.
+#' @param eps Convergence error. This is set by the user in such away that the desired convergence is met; the default is \code{eps = 1e-4}.
+#' @param n.iter Number of iterations; the default is \code{n.iter = 50}. The larger the number of iterations, the longer the computational time.
 #' @param bootstrap A boolean indicating whether to compute bootstrap standard errors for making inferences.
-#' @param n.boot Number of bootstrap samples to use in the estimation of bootstrap standard errors if \code{bootstrap = TRUE}. The default is n.boot = 50. But, higher
+#' @param n.boot Number of bootstrap samples to use in the estimation of bootstrap standard errors if \code{bootstrap = TRUE}. The default is n.boot = 150. But, higher
 #' values  of \code{n.boot} are recommended for obtaining good estimates of bootstrap standard errors.
+#' @param ncore The number of cores to use for parallel computation in bootstrapping, with the default \code{ncore = 7}.
 #' @importFrom copula pCopula frankCopula gumbelCopula tau
 #' @importFrom stats nlminb pnorm  qnorm
 #' @importFrom survival coxph survreg Surv
@@ -79,7 +78,7 @@
 
 fitDepCens = function(resData,X,W,
                 cop = c("Frank","Gumbel", "Normal"),
-                dist = c("Weibull", "lognormal"), start = NULL, n.iter = 20, bootstrap = TRUE, n.boot = 50, eps = 1e-3){
+                dist = c("Weibull", "lognormal"), start = NULL, n.iter = 50, bootstrap = TRUE, n.boot = 150, ncore = 7, eps = 1e-4){
 
   cop <- match.arg(cop)
   dist <- match.arg(dist)
@@ -95,12 +94,13 @@ fitDepCens = function(resData,X,W,
   d1 = resData$d1
   d2 = resData$d2
 
-  if(is.vector(W))
-    stop("W should be a matrix of dimension larger than 1")
-
-  if (is.vector(X)) k = 1
-  if(!is.vector(X)) k = dim(X)[2]
+  if(!is.matrix(W)) W = as.matrix(W)
+  if(!is.matrix(X)) X = as.matrix(X)
+  k = dim(X)[2]
   l = dim(W)[2]
+
+  if(l==1)
+    stop("W should be a matrix of dimension larger than 1")
 
   if(!is.null(start)){
     if(start[(k+l+1)<=0]|start[(k+l+2)<=0])
@@ -111,20 +111,20 @@ fitDepCens = function(resData,X,W,
     fit2 = survreg(Surv(Z,d2)~W-1)
     }
 
-  if(is.null(start) & (cop == "Frank" | cop == "Gumbel")){                  # obtain initial values by fitting standard models
+  if(is.null(start) & (cop == "Frank" | cop == "Gumbel")){                          # obtain initial values by fitting standard models
     start = c(fit1$coefficients,fit2$coefficients,fit2$scale,2)
   }else if (is.null(start) & (cop == "Normal")){
     start = c(fit1$coefficients,fit2$coefficients,fit2$scale,0.2)}
 
   # lb = lower boundary, ub = upper boundary
-  if(cop == "Frank")                    # Frank copula
+  if(cop == "Frank")                           # Frank copula
   {
     lb = c(rep(-Inf,k+l),0,1e-5)
     ub = c(rep(Inf,k+l+2))
-  }else if(cop == "Gumbel")              # Gumbel copula
+  }else if(cop == "Gumbel")                    # Gumbel copula
   {lb = c(rep(-Inf,k+l),0,1.0001)
     ub = c(rep(Inf,k+l+2))
-  } else if(cop == "Normal")               # Normal
+  } else if(cop == "Normal")                   # Normal
   {lb = c(rep(-Inf,k+l),0,-0.99)
    ub = c(rep(Inf,k+l+1),0.99)
   }else
@@ -134,7 +134,7 @@ fitDepCens = function(resData,X,W,
     stop("The length of initial values is not equal to the number of parameters need to be estimated")
 
 
-  res <- SolveL(start,resData,X,W,cop,dist)                          # Estimate the cumulative hazard function
+  res <- SolveL(start,resData,X,W,cop,dist)              # Estimate the cumulative hazard function
   lsml <- res$lambda
   Llrge <- res$cumhaz
   T1 <- res$times
@@ -144,15 +144,14 @@ fitDepCens = function(resData,X,W,
 
   # initial step of estimation
 
-  parhat = nlminb(start = start,PseudoL,resData = resData,X = X,W = W,lhat = lhat,cumL = cumL,cop = cop,dist = dist,lower = lb ,upper =  ub, control = list(eval.max=300,iter.max=200))$par
-
+  parhat = nlminb(start = start, PseudoL, resData = resData, X = X, W = W,lhat = lhat,cumL = cumL,cop = cop,dist = dist,lower = lb ,upper =  ub, control = list(eval.max = 300,iter.max = 200))$par
   a = start
   b = parhat
   flag = 0
 
-  # then do estimation iteratively until convergence
+  # Then do estimation iteratively until convergence
 
-  while (Distance(b,a)>eps){                                        # doing this while loop until the desired convergence criteria are met
+  while (Distance(b,a)>eps){                                             # doing this while loop until the desired convergence criteria are met
     a = b
     res <- SolveL(a,resData,X,W,cop,dist)
     lsml = res$lambda
@@ -167,7 +166,7 @@ fitDepCens = function(resData,X,W,
     if (flag>n.iter)                                  # Stop after iteration 20; this usually gives sufficient convergence results
     {
       flag=0;
-      warning("The maximum number of iterations reached before convergence criteria is satisified. Better convergence may be obtained by increasing n.iter")
+      #warning("The maximum number of iterations reached before convergence criteria is satisified. Better convergence may be obtained by increasing n.iter")
       warning(paste0("The current convergence error (eps) is ", Distance(b,a)))
       break;
     }
@@ -176,7 +175,7 @@ fitDepCens = function(resData,X,W,
 
   # nonparametric bootstrap for making inference
 
-  paramsBootstrap = list("init" = parhat,"resData" = resData, "X" = X, "W" = W,"lhat" = lhat,"cumL" = cumL, "dist" = dist,"k" = k, "lb" = lb, "ub" = ub, "Obs.time" = T1, "cop" = cop, "n.boot" = n.boot, "n.iter" = n.iter, "eps" = eps)
+  paramsBootstrap = list("init" = parhat,"resData" = resData, "X" = X, "W" = W,"lhat" = lhat,"cumL" = cumL, "dist" = dist,"k" = k, "lb" = lb, "ub" = ub, "Obs.time" = T1, "cop" = cop, "n.boot" = n.boot, "n.iter" = n.iter, "ncore" = ncore, "eps" = eps)
 
   fitObj <- NULL
 

@@ -18,6 +18,7 @@ boot.funI(
   Obs.time,
   n.boot,
   n.iter,
+  ncore,
   eps
 )
 }
@@ -50,6 +51,8 @@ default}
 \item{n.boot}{Number of bootstraps to use in the estimation of bootstrap standard errors.}
 
 \item{n.iter}{Number of iterations; the default is \code{n.iter = 20}. The larger the number of iterations, the longer the computational time}
+
+\item{ncore}{The number of cores to use for parallel computation is configurable, with the default \code{ncore = 7}.}
 
 \item{eps}{Convergence error. This is set by the user in such away that the desired convergence is met; the default is \code{eps = 1e-3}}
 }

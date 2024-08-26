@@ -13,9 +13,7 @@
 summary.depFit <- function(object, ...) {
 
   message(rep("-", 100))
-  message("Summary of dependent censoring model")
-
-
+  cat("Summary of dependent censoring model")
 
  # Sys.sleep(1)
 

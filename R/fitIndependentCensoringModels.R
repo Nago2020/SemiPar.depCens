@@ -16,11 +16,12 @@
 #' @param dist The distribution to be used for the censoring time C. Only two distributions are allowed, i.e, Weibull
 #' and lognormal distributions. With the value \code{"Weibull"} as the
 #'   default.
-#' @param eps Convergence error. This is set by the user in such away that the desired convergence is met; the default is \code{eps = 1e-3}.
-#' @param n.iter Number of iterations; the default is \code{n.iter = 20}. The larger the number of iterations, the longer the computational time.
+#' @param eps Convergence error. This is set by the user in such away that the desired convergence is met; the default is \code{eps = 1e-4}.
+#' @param n.iter Number of iterations; the default is \code{n.iter = 50}. The larger the number of iterations, the longer the computational time.
 #' @param bootstrap A boolean indicating whether to compute bootstrap standard errors for making inferences.
-#' @param n.boot Number of bootstrap samples to use in the estimation of bootstrap standard errors if \code{bootstrap = TRUE}. The default is n.boot = 50. But, higher
+#' @param n.boot Number of bootstrap samples to use in the estimation of bootstrap standard errors if \code{bootstrap = TRUE}. The default is n.boot = 150. But, higher
 #' values  of \code{n.boot} are recommended for obtaining good estimates of bootstrap standard errors.
+#' @param ncore The number of cores to use for parallel computation is configurable, with the default \code{ncore = 7}.
 #' @importFrom stats nlminb pnorm  qnorm sd
 #' @importFrom survival coxph survreg Surv
 #'
@@ -74,7 +75,8 @@
 
 
 fitIndepCens = function(resData,X,W,
-                      dist = c("Weibull", "lognormal"), start = NULL, n.iter = 20, bootstrap = TRUE, n.boot = 50,  eps = 1e-3){
+                      dist = c("Weibull", "lognormal"), start = NULL,
+                      n.iter = 50, bootstrap = TRUE, n.boot = 150, ncore = 7, eps = 1e-4){
 
   dist <- match.arg(dist)
 
@@ -115,7 +117,7 @@ fitIndepCens = function(resData,X,W,
   cumL <- longfrm[,2]
 
 
-  #lb = lower boundary, ub = upper boundary
+  # lb = lower boundary, ub = upper boundary
   lb = c(rep(-Inf,k+l),0)
   ub = c(rep(Inf,k+l+1))
 
@@ -143,7 +145,7 @@ fitIndepCens = function(resData,X,W,
     if (flag>n.iter)                                    # stop after iteration 30; this usually gives sufficient convergence results
     {
       flag=0;
-      warning("The maximum number of iterations reached before convergence criteria is satisified. Better convergence may be obtained by increasing n.iter")
+      #warning("The maximum number of iterations reached before convergence criteria is satisified. Better convergence may be obtained by increasing n.iter")
       warning(paste0("The current convergence error (eps) is", Distance(b,a)))
       break;
     }
@@ -152,11 +154,11 @@ fitIndepCens = function(resData,X,W,
 
   # nonparametric bootstrap for making inference
 
-  paramsBootstrap = list("init" = parhat,"resData" = resData, "X" = X, "W" = W,"lhat" = lhat,"cumL" = cumL, "dist" = dist,"k" = k, "lb" = lb, "ub" = ub, "Obs.time" = T1, "n.boot" = n.boot, "n.iter" = n.iter, "eps" = eps)
+  paramsBootstrap = list("init" = parhat,"resData" = resData, "X" = X, "W" = W,"lhat" = lhat,"cumL" = cumL, "dist" = dist,"k" = k, "lb" = lb, "ub" = ub, "Obs.time" = T1, "n.boot" = n.boot, "n.iter" = n.iter,"ncore" = ncore, "eps" = eps)
 
   fitObj <- NULL
 
-  if(bootstrap)                                                         # Obtain bootstrap standard error
+  if(bootstrap)                                               # Obtain bootstrap standard error
     fitObj <- do.call(boot.funI, paramsBootstrap)
 
   nn <- length(parhat)
@@ -164,7 +166,7 @@ fitIndepCens = function(resData,X,W,
 
   indObj <- c(list("parameterEstimates" = parhat, "censoringDistribution" = dist, "bootstrap" = bootstrap, "dimX" = k, "dimW" = l,"observedTime" = cumHat$times, "hazardFunction" = cumHat$lambda, "cumhazardFunction" = cumHat$cumhaz),fitObj)
 
-  class(indObj) <- append(class(indObj), "indepFit")                                # independent censoring fit object
+  class(indObj) <- append(class(indObj), "indepFit")        # independent censoring fit object
 
   return(indObj)
 }

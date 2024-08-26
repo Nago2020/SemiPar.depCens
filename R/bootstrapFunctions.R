@@ -24,18 +24,18 @@
 #' @param eps Convergence error. This is set by the user in such away that the desired convergence is met; the default is \code{eps = 1e-3}
 #' @param n.iter Number of iterations; the default is \code{n.iter = 20}. The larger the number of iterations, the longer the computational time.
 #' @param n.boot Number of bootstraps to use in the estimation of bootstrap standard errors.
+#' @param ncore The number of cores to use for parallel computation is configurable, with the default \code{ncore = 7}.
 #' @importFrom stats nlminb pnorm  qnorm sd
 #' @importFrom copula pCopula frankCopula gumbelCopula tau
 #' @import foreach
 #' @import parallel
-#'
 #' @return Bootstrap standard errors for parameter estimates and for estimated cumulative hazard function.
 #'
 
 
-boot.fun = function(init,resData,X,W,lhat, cumL,dist,k,lb, ub, Obs.time,cop,n.boot, n.iter, eps){
+boot.fun = function(init,resData,X,W,lhat, cumL,dist,k,lb, ub, Obs.time,cop,n.boot, n.iter, ncore, eps){
   B = n.boot                                     # number of bootstrap samples
-  n.cores <- parallel::detectCores() - 1
+  n.cores <- ncore
 
   my.cluster <- parallel::makeCluster(
     n.cores,
@@ -133,6 +133,7 @@ boot.fun = function(init,resData,X,W,lhat, cumL,dist,k,lb, ub, Obs.time,cop,n.bo
 #' @param eps Convergence error. This is set by the user in such away that the desired convergence is met; the default is \code{eps = 1e-3}
 #' @param n.iter Number of iterations; the default is \code{n.iter = 20}. The larger the number of iterations, the longer the computational time
 #' @param n.boot Number of bootstraps to use in the estimation of bootstrap standard errors.
+#' @param ncore The number of cores to use for parallel computation is configurable, with the default \code{ncore = 7}.
 #' @importFrom stats nlminb pnorm  qnorm sd
 #' @importFrom survival coxph survreg
 #' @import foreach
@@ -141,9 +142,9 @@ boot.fun = function(init,resData,X,W,lhat, cumL,dist,k,lb, ub, Obs.time,cop,n.bo
 #'
 
 
-boot.funI = function(init,resData,X,W,lhat, cumL,dist,k,lb,ub, Obs.time,n.boot, n.iter, eps){
+boot.funI = function(init,resData,X,W,lhat, cumL,dist,k,lb,ub, Obs.time,n.boot, n.iter, ncore, eps){
   B = n.boot                                     # number of bootstrap samples
-  n.cores <- parallel::detectCores() - 1
+  n.cores <- ncore
 
   my.cluster <- parallel::makeCluster(
     n.cores,

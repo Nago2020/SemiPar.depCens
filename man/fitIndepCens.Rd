@@ -10,10 +10,11 @@ fitIndepCens(
   W,
   dist = c("Weibull", "lognormal"),
   start = NULL,
-  n.iter = 20,
+  n.iter = 50,
   bootstrap = TRUE,
-  n.boot = 50,
-  eps = 0.001
+  n.boot = 150,
+  ncore = 7,
+  eps = 1e-04
 )
 }
 \arguments{
@@ -31,14 +32,16 @@ default.}
 \item{start}{Initial values for the finite dimensional parameters. If \code{start} is NULL, the initial values will be obtained
 by fitting a Cox model for survival time T and a Weibull model for censoring time C.}
 
-\item{n.iter}{Number of iterations; the default is \code{n.iter = 20}. The larger the number of iterations, the longer the computational time.}
+\item{n.iter}{Number of iterations; the default is \code{n.iter = 50}. The larger the number of iterations, the longer the computational time.}
 
 \item{bootstrap}{A boolean indicating whether to compute bootstrap standard errors for making inferences.}
 
-\item{n.boot}{Number of bootstrap samples to use in the estimation of bootstrap standard errors if \code{bootstrap = TRUE}. The default is n.boot = 50. But, higher
+\item{n.boot}{Number of bootstrap samples to use in the estimation of bootstrap standard errors if \code{bootstrap = TRUE}. The default is n.boot = 150. But, higher
 values  of \code{n.boot} are recommended for obtaining good estimates of bootstrap standard errors.}
 
-\item{eps}{Convergence error. This is set by the user in such away that the desired convergence is met; the default is \code{eps = 1e-3}.}
+\item{ncore}{The number of cores to use for parallel computation is configurable, with the default \code{ncore = 7}.}
+
+\item{eps}{Convergence error. This is set by the user in such away that the desired convergence is met; the default is \code{eps = 1e-4}.}
 }
 \value{
 This function returns a fit of independent censoring model; parameter estimates, estimate of the cumulative hazard function, bootstrap standard
